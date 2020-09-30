@@ -23,15 +23,34 @@ function C = ChiAtNearestStream(FD,S,DEM,chi)
 %
 %     C    Chi value at nearest streams (class: GRIDobj)
 %
-% Example
+%    Example (For more info, see the attached tutorial file 'DULAB_experiment_Chi')
 %
-%     DEM = GRIDobj('srtm_bigtujunga30m_utm11.tif');
-%     FD = FLOWobj(DEM,'preprocess','carve');
-%     S = STREAMobj(FD,'minarea',1000);
+%     DEM = GRIDobj('Diff_EXP_17hr.tif');
+%     DEM.Z(DEM.Z<-9998)=NaN;
+%     FD  = FLOWobj(DEM,'preprocess','c');
+%     ST = STREAMobj(FD);
+%     D = DIVIDEobj(FD,ST);
+%     D = divorder(D,'topo');
 %     A = flowacc(FD);
-%     chi = chitransform(S,A,'mn',0.45);
-%     C = ChiAtNearestStream(FD,S,DEM,chi);
+%     Ufast = 0.021; % Fast uplift rate is 0.021 m/hr.
+%     Umid = 0.016; % Medium uplift rate is 0.016 m/hr.
+%     Uslow = 0.008; % Slow uplift rate is 0.008 m/hr.
+%     U_K = DEM;
+%     U_K.Z = NaN(DEM.size);
+%     columns = U_K.size(2);
+%     Third = floor(columns/3); % represents 1/3 of the width of the box.
+%     U_K.Z(:,1:Third) = Ufast;
+%     for i=Third+1:2*Third
+%     U_K.Z(:,i) = ((i-Third)/(Third))*(Umid-Ufast)+Ufast;
+%     end
+%     for i=2*Third+1:columns
+%     U_K.Z(:,i) = ((i-2*Third)/(Third))*(Uslow-Umid)+Umid;
+%     end
+%     chi = ChiPrimeTransform(ST,A,'mn',0.15,'UoverK', U_K);
+%     C = ChiAtNearestStream(FD,ST,DEM,chi);
 %     imageschs(DEM,C)
+%     hold on
+%     plot(ST, 'k')
 %     hc = colorbar;
 %     hc.Label.String = '\chi [m] at nearest stream';
 %     
