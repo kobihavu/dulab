@@ -31,7 +31,7 @@ function c = ChiPrimeTransform(S,A,varargin)
 %     c     node attribute list (nal) of chi values
 %
 % Example: chi computation considering differential uplift, uniform K.
-% 
+% For more info, see the attached tutorial file 'DULAB_experiment_Chi'
 %
 %     DEM = GRIDobj('Diff_EXP_17hr.tif');
 %     DEM.Z(DEM.Z<-9998)=NaN;
