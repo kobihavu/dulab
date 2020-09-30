@@ -54,21 +54,35 @@ function [MS,varargout] = ChiAsymmetry(D,GRID)
 %      .theta     - angle from north of divide segment(!) asymmetry 
 %      .rho       - magnitude of divide segment(!) asymmetry 
 %
-% Example
-%     
-%     DEM = GRIDobj('srtm_bigtujunga30m_utm11.tif');
+% Example (For more info, see the attached tutorial file 'DULAB_experiment_Chi')
+% 
+%     DEM = GRIDobj('Diff_EXP_17hr.tif');
+%     DEM.Z(DEM.Z<-9998)=NaN;
 %     FD  = FLOWobj(DEM,'preprocess','c');
-%     S = STREAMobj(FD,flowacc(FD)>1000);
-%     D = DIVIDEobj(FD,S);
+%     ST = STREAMobj(FD);
+%     D = DIVIDEobj(FD,ST);
 %     D = divorder(D,'topo');
 %     A = flowacc(FD);
-%     chi = chitransform(S,A,'mn',0.45);
-%     C = ChiAtNearestStream(FD,S,DEM,chi);
+%     Ufast = 0.021; % Fast uplift rate is 0.021 m/hr.
+%     Umid = 0.016; % Medium uplift rate is 0.016 m/hr.
+%     Uslow = 0.008; % Slow uplift rate is 0.008 m/hr.
+%     U_K = DEM;
+%     U_K.Z = NaN(DEM.size);
+%     columns = U_K.size(2);
+%     Third = floor(columns/3); % represents 1/3 of the width of the box.
+%     U_K.Z(:,1:Third) = Ufast;
+%     for i=Third+1:2*Third
+%     U_K.Z(:,i) = ((i-Third)/(Third))*(Umid-Ufast)+Ufast;
+%     end
+%     for i=2*Third+1:columns
+%     U_K.Z(:,i) = ((i-2*Third)/(Third))*(Uslow-Umid)+Umid;
+%     end
+%     chi = ChiPrimeTransform(ST,A,'mn',0.15,'UoverK', U_K);
+%     C = ChiAtNearestStream(FD,ST,DEM,chi);
 %     [MS,S] = ChiAsymmetry(D,C);
 %     for i = 1 : length(S)
 %     S(i).length = max(getdistance(S(i).x,S(i).y));
 %     end
-% 
 %     figure
 %     imageschs(DEM,[],'colormap',[.9 .9 .9],'colorbar',false);
 %     hold on
@@ -77,7 +91,7 @@ function [MS,varargout] = ChiAsymmetry(D,GRID)
 %     axis image
 %     hc = colorbar;
 %     hc.Label.String = 'Across divide difference in \chi [m]';
-%     ix = [MS.order]>8;
+%     ix = [MS.order]>40;
 %     quiver([MS(ix).X],[MS(ix).Y],[MS(ix).u],[MS(ix).v],2,...
 %     'color','r','linewidth',1)
 %     title('Across divide difference and direction of higher \chi value')
